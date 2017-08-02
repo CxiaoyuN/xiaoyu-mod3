@@ -252,7 +252,7 @@ install_ss_panel_mod_v3_2(){
 	mkdir /home/wwwroot/backups
 	rm -rf /usr/local/nginx/conf/vhost/$yuming.conf
 	wget -O /usr/local/nginx/conf/vhost/$yuming.conf https://raw.githubusercontent.com/CxiaoyuN/save-mod/new_master/xiaoyu.com.conf
-	sed -i "s#xiaoyu.com#$$yuming#" /usr/local/nginx/conf/vhost/$yuming.conf
+	sed -i "s#yuming#$yuming#" /usr/local/nginx/conf/vhost/$yuming.conf
 	cd /home/wwwroot/$yuming
 	yum install git -y
 	rm -rf index.html
@@ -309,8 +309,8 @@ install_ss_panel_mod_v3_2(){
 	rm -rf /home/wwwroot/default/sspanel-mod3-web.zip
 	echo "#####################################################################################"
 	echo "# 安装成功，登录http://$yuming，数据库http://${IPAddress}                           #"
-	echo "# 创建管理（必须邮箱）：cd $yuming 然后 php xcat createAdmin                        #"
-	echo "# 更多网站数据：/home/wwwroot/default/config/.config.php                            #"
+	echo "# 创建管理（必须邮箱）：cd /home/wwwroot/$yuming 然后 php xcat createAdmin          #"
+	echo "# 更多网站数据：/home/wwwroot/$yuming/config/.config.php                            #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
 	echo "# 节点设置: 例如   香港 1 – Shadowsocks                                             #"
 	echo "# Author: 小羽                                                                      #"
