@@ -176,6 +176,7 @@ install_ss_panel_mod_v3(){
 	echo "# 创建管理：cd /home/wwwroot/default  然后 php xcat createAdmin                     #"
 	echo "# 更多网站数据：/home/wwwroot/default/config/.config.php                            #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
+	echo "# 节点设置: 例如   香港 1 – Shadowsocks                                             #"
 	echo "# Author: 小羽                                                                      #"
 	echo "# QQ群: 600573662                                                                   #"
 	echo "#####################################################################################"
@@ -311,6 +312,7 @@ install_ss_panel_mod_v3_2(){
 	echo "# 创建管理（必须邮箱）：cd $yuming 然后 php xcat createAdmin                        #"
 	echo "# 更多网站数据：/home/wwwroot/default/config/.config.php                            #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
+	echo "# 节点设置: 例如   香港 1 – Shadowsocks                                             #"
 	echo "# Author: 小羽                                                                      #"
 	echo "# QQ群: 600573662                                                                   #"
 	echo "#####################################################################################"
@@ -415,9 +417,9 @@ install_node(){
 			install_ubuntu_ssr
 		fi
 	}
-	read -p "Please input your domain(like:https://www.xiaoyussr.top or http://114.114.114.114): " Userdomain
-	read -p "Please input your muKey(like:xiaoyu): " Usermukey
-	read -p "Please input your Node_ID(like:3): " UserNODE_ID
+	read -p "请输入你的网址domain(like:https://www.xiaoyussr.top or http://114.114.114.114): " Userdomain
+	read -p "请输入你的对接密匙muKey(like:xiaoyu): " Usermukey
+	read -p "请输入你的节点ID Node_ID(like:3): " UserNODE_ID
 	install_ssr_for_each
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 	cd /root/shadowsocks
