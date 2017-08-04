@@ -67,6 +67,64 @@ install_TCP_BBR_MOD(){
 	echo "# QQ群: 600573662                                                              #"
 	echo "################################################################################"
 }
+install_SSL(){
+    clear
+	echo
+	echo "#############################################################################"
+	echo "#                           安装SSL证书                                     #"
+	echo "#       除非你会手动自己搞，不然就按说明来 （xiaoyu.com改成自己的）         #"
+	echo "#例如ss-panel-mod3的前端面板，站点地址例如www.xiaoyu.com 站点目录public     #"
+	echo "#例如ss-panel-mod3的问答系统，站点地址例如help.xiaoyu.com 站点目录Wecenter  #"
+	echo "#例如Whmcs，站点地址例如whmcs.xiaoyu.com  站点目录whmcs                     #"
+	echo "# Author: 小羽                                                              #"
+	echo "# QQ群: 600573662                                                           #"
+	echo "#############################################################################"
+	echo
+	key='yes';
+	echo "设置站点地址" 
+    echo "输入站点地址:"
+    read -p "(默认: www.xiaoyu.com):" yuming
+    [ -z "$yuming" ] && yuming="www.xiaoyu.com"
+	echo
+	echo "设置站点目录" 
+    echo "输入站点目录:"
+    read -p "(默认: public):" mulu
+    [ -z "$mulu" ] && mulu="public"
+	echo
+	echo -e "\033[0;1;35m创建SSL证书目录\033[0m"
+	mkdir /etc/ssl/web
+	echo -e "\033[0;1;35m设置nginx文件\033[0m"
+	rm -rf /usr/local/nginx/conf/vhost/$yuming.conf
+	wget -O /usr/local/nginx/conf/vhost/$yuming.conf https://raw.githubusercontent.com/CxiaoyuN/save-mod/new_master/www.xiaoyu.com.conf	
+	sed -i "s#yuming#$yuming#" /usr/local/nginx/conf/vhost/$yuming.conf
+	sed -i "s#mulu#$mulu#" /usr/local/nginx/conf/vhost/$yuming.conf
+	echo -e "\033[0;1;35m设置完成\033[0m"
+	cd
+	echo -n -e "赶紧上传证书到/etc/ssl/web中，你上传成功了吗？成功就输yes [\033[32m $key \033[0m] ："
+	read PASSWD
+	readkey=$PASSWD
+	if [[ ${readkey%%\ *} == $key ]]
+	then
+	echo
+	echo -e '\033[32m你上传成功了吗！\033[0m即将重启nginx...'
+	sleep 1
+	service nginx restart
+	echo -e "\033[0;1;35mnginx重启成功\033[0m"
+	else
+	echo
+	echo -e '\033[31m上传都不会，那你仔细看看下面的！\033[0m'
+	sleep 1
+	echo
+	exit
+	fi
+	echo "#######################################################################################"
+	echo "# 将你的证书名称重命名改成对应的域名名称。并将证书一个crt和key文件放入/etc/ssl/web中  #"
+	echo "# 然后输入 service nginx restart ，你的网址为httpS://$yuming                          #"
+	echo "# 成功就不用看，失败就仔细看！成功就不用看，失败就仔细看！成功就不用看，失败就仔细看！#"
+	echo "# Author: 小羽                                                                        #"
+	echo "# QQ群: 600573662                                                                     #"
+	echo "#######################################################################################"
+}
 install_ss_panel_mod_v3(){
     clear
 	echo
@@ -123,7 +181,7 @@ install_ss_panel_mod_v3(){
 	cd /home/wwwroot/default/
 	yum install git -y
 	rm -rf index.html
-	wget https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/ss.panel_mod.zip && unzip ss.panel_mod.zip
+	wget https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/ss.panel_mod.zip && unzip -q ss.panel_mod.zip
 	chattr -i .user.ini
 	mv .user.ini public
 	chown -R root:root *
@@ -216,8 +274,8 @@ install_ss_panel_mod_v3_2(){
 	echo "-------------------------------------------"
 	echo "设置站点名称" 
     echo "输入站点名称:"
-    read -p "(默认: 小羽SSR云控):" WZName
-    [ -z "$WZName" ] && WZName="小羽SSR云控"
+    read -p "(默认: To the Flower Of Hell):" WZName
+    [ -z "$WZName" ] && WZName="To the Flower Of Hell"
 	echo
 	echo "设置站点地址" 
     echo "输入站点地址:"
@@ -251,18 +309,18 @@ install_ss_panel_mod_v3_2(){
     echo "-------------------------------------------"
 	mkdir /home/wwwroot/backups
 	rm -rf /usr/local/nginx/conf/vhost/$yuming.conf
-	wget -O /usr/local/nginx/conf/vhost/$yuming.conf https://raw.githubusercontent.com/CxiaoyuN/save-mod/new_master/xiaoyu.com.conf
+	wget -O /usr/local/nginx/conf/vhost/$yuming.conf https://raw.githubusercontent.com/CxiaoyuN/eg-save-mod/new_master/xiaoyu.com.conf
 	sed -i "s#yuming#$yuming#" /usr/local/nginx/conf/vhost/$yuming.conf
 	cd /home/wwwroot/$yuming
 	yum install git -y
 	rm -rf index.html
-	git clone https://github.com/CxiaoyuN/save-mod.git tmp -b new_master && mv tmp/.git . && rm -rf tmp && git reset --hard
+	git clone https://github.com/CxiaoyuN/eg-save-mod.git tmp -b new_master && mv tmp/.git . && rm -rf tmp && git reset --hard
 	chattr -i .user.ini
 	mv .user.ini public
 	chown -R root:root *
 	chmod -R 777 *
 	chown -R www:www storage
-	chattr +i public/.user.ini
+	chattr +i public/.user.ini 
 	service nginx restart
 	yum install perl-DBI freeradius freeradius-mysql freeradius-utils -y
 	mysql -uroot -p$lnmppasswd -e"CREATE USER 'radius'@'%' IDENTIFIED BY '$radiuspasswd';" 
@@ -313,6 +371,188 @@ install_ss_panel_mod_v3_2(){
 	echo "# 更多网站数据：/home/wwwroot/$yuming/config/.config.php                            #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
 	echo "# 节点设置: 例如   香港 1 – Shadowsocks                                             #"
+	echo "# Author: 小羽                                                                      #"
+	echo "# QQ群: 600573662                                                                   #"
+	echo "#####################################################################################"
+}
+install_WeCenter(){
+    clear
+	echo
+	echo "#############################################################################"
+	echo "#                    安装SS-Panel-Mod3 问答系统WeCenter                     #"
+	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master    #"
+	echo "# Author: 小羽                                                              #"
+	echo "# QQ群: 600573662                                                           #"
+	echo "#############################################################################"
+	echo
+	echo "设置数据库密码lnmp是面板设置的" 
+    echo "输入lnmp设置的数据库密码:"
+    read -p "(默认: root):" lnmppasswd
+    [ -z "$lnmppasswd" ] && lnmppasswd="root"
+	echo
+	echo -e "\033[0;1;35m网站设置\033[0m"
+	echo "设置WeCenter站点地址"
+    echo "输入WeCenter站点地址:"
+    read -p "(默认: help.xiaoyu.com):" wecenterym
+    [ -z "$wecenterym" ] && wecenterym="help.xiaoyu.com"
+	echo
+	echo "设置前端站点地址"
+    echo "输入前端站点地址:"
+    read -p "(默认: www.xiaoyu.com):" yuming
+    [ -z "$yuming" ] && yuming="www.xiaoyu.com"
+	echo
+	echo "设置根地址"
+    echo "输入前端站点地址:"
+    read -p "(默认: xiaoyu.com):" ym
+    [ -z "$ym" ] && yuming="xiaoyu.com"
+	echo
+	echo -e "\033[0;1;35m数据设置\033[0m"
+	echo "-------------------------------------------"
+	echo "设置WeCenter数据库名称" 
+    echo "输入WeCenter数据库名称:"
+    read -p "(默认: wecenter):" wecenterdatabase
+    [ -z "$wecenterdatabase" ] && wecenterdatabase="wecenter"
+	echo
+	echo "设置WeCenter数据库用户名）" 
+    echo "输入WeCenter数据库用户名:"
+    read -p "(默认: wecenter):" wecenteruser
+    [ -z "$wecenteruser" ] && wecenteruser="wecenter"
+	echo
+	echo "设置WeCenter数据库密码" 
+    echo "输入WeCenter数据库密码:"
+    read -p "(默认: root):" wecenterpassword
+    [ -z "$wecenterpassword" ] && wecenterpassword="root"
+	echo "-------------------------------------------"
+	echo
+	echo -e "\033[0;1;35m创建数据库\033[0m"
+	mysql -uroot -p$lnmppasswd -e"CREATE USER '$wecenterdatabase'@'%' IDENTIFIED BY '$wecenterpassword';" 
+	mysql -uroot -p$lnmppasswd -e"GRANT ALL ON *.* TO '$wecenterdatabase'@'%';" 
+	mysql -uroot -p$lnmppasswd -e"create database $wecenterdatabase;" 
+	mysql -uroot -p$lnmppasswd -e"use $wecenteruser;" 
+	echo -e "\033[0;1;35m安装必备组件\033[0m"
+	cd /root/lnmp1.3-mod
+	bash addons.sh install imagemagick 
+	echo -e "\033[0;1;35m开启前端问答系统功能\033[0m"
+	sed -i "s#wecenterym#$wecenterym#" /home/wwwroot/$yuming/config/.config.php
+	sed -i "s#ym#$ym#" /home/wwwroot/$yuming/config/.config.php
+	sed -i "s#wecenterdatabase#$wecenterdatabase#" /home/wwwroot/$yuming/config/.config.php
+	sed -i "s#wecenteruser#$wecenteruser#" /home/wwwroot/$yuming/config/.config.php
+	sed -i "s#wecenterpassword#$wecenterpassword#" /home/wwwroot/$yuming/config/.config.php
+	echo -e "\033[0;1;35m获取问答系统\033[0m"
+	cd /home/wwwroot/$wecenterym/
+	wget https://github.com/CxiaoyuN/xiaoyu-mod3/raw/master/Wecenter.zip && unzip -q Wecenter.zip
+	rm -rf Wecenter.zip
+	chmod 777 /home/wwwroot/$wecenterym/Wecenter/system
+	chmod -R 777 /home/wwwroot/$wecenterym/Wecenter/system/config
+	mkdir /home/wwwroot/$wecenterym/Wecenter/tmp
+	mkdir /home/wwwroot/$wecenterym/Wecenter/cache
+	mkdir /home/wwwroot/$wecenterym/Wecenter/uploads
+	chmod 777 /home/wwwroot/$wecenterym/Wecenter/tmp
+	chmod 777 /home/wwwroot/$wecenterym/Wecenter/cache
+	chmod 777 /home/wwwroot/$wecenterym/Wecenter/uploads
+	echo -e "\033[0;1;35m仔细看下面安装\033[0m"
+	echo "#####################################################################################"
+	echo "# Wecenter设置成功，登录https://$wecenterym/install/进行安装 。  用邮箱创建账号！   #"
+	echo "# 创建完账号后执行rm -rf /home/wwwroot/$wecenterym/Wecenter/install/index.php       #"
+	echo "# 更多网站数据：/home/wwwroot/$yuming/config/.config.php最后的设置                  #"
+	echo "# .config.php文件中wecenter 目录下的 system/config.inc.php     这下面两行           #"
+	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
+	echo "# Author: 小羽                                                                      #"
+	echo "# QQ群: 600573662                                                                   #"
+	echo "#####################################################################################"
+}
+install_Whmcs(){
+    clear
+	echo
+	echo "#############################################################################"
+	echo "#                        安装小羽版Whmcs网站                                #"
+	echo "#                 安装它必须先安装SSL证书，并且比较看好手动能力             #"
+	echo "# Author: 小羽                                                              #"
+	echo "# QQ群: 600573662                                                           #"
+	echo "#############################################################################"
+	echo
+	key='yes';
+	echo
+	echo "设置数据库密码lnmp是面板设置的" 
+    echo "输入lnmp设置的数据库密码:"
+    read -p "(默认: root):" lnmppasswd
+    [ -z "$lnmppasswd" ] && lnmppasswd="root"
+	echo
+	echo -e "\033[0;1;35m网站设置\033[0m"
+	echo "设置Whmcs站点地址"
+    echo "输入Whmcs站点地址:"
+    read -p "(默认: whmcs.xiaoyu.com):" Whmcsym
+    [ -z "$Whmcsym" ] && Whmcsym="whmcs.xiaoyu.com"
+	echo
+	echo -e "\033[0;1;35m数据设置\033[0m"
+	echo "-------------------------------------------"
+	echo "设置Whmcs数据库名称" 
+    echo "输入Whmcs数据库名称:"
+    read -p "(默认: whmcs):" whmcsdatabase
+    [ -z "$whmcsdatabase" ] && whmcsdatabase="whmcs"
+	echo
+	echo "设置WeCenter数据库用户名）" 
+    echo "输入WeCenter数据库用户名:"
+    read -p "(默认: wecenter):" wecenteruser
+    [ -z "$wecenteruser" ] && wecenteruser="wecenter"
+	echo
+	echo "设置Whmcs数据库密码" 
+    echo "输入Whmcs数据库密码:"
+    read -p "(默认: root):" whmcspassword
+    [ -z "$whmcspassword" ] && whmcspassword="root"
+	echo "-------------------------------------------"
+	echo
+	echo -e "\033[0;1;35m创建数据库\033[0m"
+	mysql -uroot -p$lnmppasswd -e"CREATE USER '$whmcsdatabase'@'%' IDENTIFIED BY '$whmcspassword';" 
+	mysql -uroot -p$lnmppasswd -e"GRANT ALL ON *.* TO '$whmcsdatabase'@'%';" 
+	mysql -uroot -p$lnmppasswd -e"create database $whmcsdatabase;" 
+	mysql -uroot -p$lnmppasswd -e"use $whmcsuser;" 
+	echo -e "\033[0;1;35m安装必备组件\033[0m"
+	cd /root/lnmp1.3-mod
+	bash addons.sh install ionCube 
+	echo -e "\033[0;1;35m获取whmcs\033[0m"
+	cd /home/wwwroot/$Whmcsym/
+	mkdir /home/wwwroot/$Whmcsym/whmcs
+	mkdir /home/wwwroot/$Whmcsym/whmcs/vendor
+	cd /home/wwwroot/$Whmcsym/whmcs
+	wget https://github.com/CxiaoyuN/xiaoyu-ws/raw/master/whmcs.zip && unzip -q whmcs.zip
+	rm -rf whmcs.zip
+	cd /home/wwwroot/$Whmcsym/whmcs/vendor
+	wget https://github.com/CxiaoyuN/xiaoyu-ws/raw/master/vendor.zip && unzip -q vendor.zip
+	rm -rf vendor.zip
+	cd /home/wwwroot/$Whmcsym/whmcs
+	cp /home/wwwroot/$Whmcsym/whmcs/configuration.php.new /home/wwwroot/$Whmcsym/whmcs/configuration.php
+	rm -rf /home/wwwroot/$Whmcsym/whmcs/configuration.php.new
+	chmod 777 /home/wwwroot/$Whmcsym/whmcs/configuration.php
+	chmod 777 /home/wwwroot/$Whmcsym/whmcs/attachments
+	chmod 777 /home/wwwroot/$Whmcsym/whmcs/downloads
+	chmod 777 /home/wwwroot/$Whmcsym/whmcs/templates_c
+	echo -n -e "打开https:$Whmcsym，然后一路安装，你创建账号完成了吗？成功就输yes [\033[32m $key \033[0m] ："
+	read PASSWD
+	readkey=$PASSWD
+	if [[ ${readkey%%\ *} == $key ]]
+	then
+	echo
+	echo -e '\033[32m创建账号完成\033[0m即将处理后续...'
+	sleep 1
+	rm -rf /home/wwwroot/$Whmcsym/whmcs/install
+	php -q /home/wwwroot/$Whmcsym/whmcs/crons/cron.php
+	service nginx restart
+	echo -e "\033[0;1;35mnginx重启成功\033[0m"
+	else
+	echo
+	echo -e '\033[31m上传都不会，那你仔细看看下面的！\033[0m'
+	sleep 1
+	echo
+	exit
+	fi
+	echo -e "\033[0;1;35m仔细看下面安装\033[0m"
+	echo "#####################################################################################"
+	echo "# Wecenter设置成功，登录https://$wecenterym/install/进行安装 。  用邮箱创建账号！   #"
+	echo "# 创建完账号后执行rm -rf /home/wwwroot/$wecenterym/Wecenter/install/index.php       #"
+	echo "# 更多网站数据：/home/wwwroot/$yuming/config/.config.php最后的设置                  #"
+	echo "# .config.php文件中wecenter 目录下的 system/config.inc.php     这下面两行           #"
+	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
 	echo "# Author: 小羽                                                                      #"
 	echo "# QQ群: 600573662                                                                   #"
 	echo "#####################################################################################"
@@ -451,9 +691,12 @@ echo -e "\033[36m# 请选择你要安装的脚本                               
 echo -e "\033[36m# 1  安装SS-Panel-Mod3环境lnmp1.3                                          #\033[0m"
 echo -e "\033[36m# 2  安装SS-Panel-Mod3前端面板（IP版）                                     #\033[0m"
 echo -e "\033[36m# 3  安装SS-Panel-Mod3前端面板（域名版）                                   #\033[0m"
-echo -e "\033[36m# 4  安装SS-Panel-Mod3后端节点                                             #\033[0m"
-echo -e "\033[36m# 5  安装TCP_BBR原版加速器                                                 #\033[0m"
-echo -e "\033[36m# 6  安装TCP_BBR魔改版加速器（Debian8、9和Ubuntu16）                       #\033[0m"
+echo -e "\033[36m# 4  安装SS-Panel-Mod3 问答系统                                            #\033[0m"
+echo -e "\033[36m# 5  安装小羽版Whmcs网站                                                   #\033[0m"
+echo -e "\033[36m# 6  安装SS-Panel-Mod3后端节点                                             #\033[0m"
+echo -e "\033[36m# 7  安装TCP_BBR原版加速器                                                 #\033[0m"
+echo -e "\033[36m# 8  安装TCP_BBR魔改版加速器（Debian8、9和Ubuntu16）                       #\033[0m"
+echo -e "\033[36m# 9  安装SSL证书 （建议腾讯的）                                            #\033[0m"
 echo -e "\033[36m############################################################################\033[0m"
 echo
 stty erase '^H' && read -p " 请输入数字 [1-6]:" num
@@ -468,13 +711,22 @@ case "$num" in
 	install_ss_panel_mod_v3_2
 	;;
 	4)
-	install_node
+	install_WeCenter
 	;;
 	5)
-	install_TCP_BBR
+	install_Whmcs
 	;;
 	6)
+	install_node
+	;;
+	7)
 	install_TCP_BBR
+	;;
+	8)
+	install_TCP_BBR_MOD
+	;;
+	9)
+	install_SSL
 	;;
 	*)
 	echo "请输入正确数字 [1-6]"
