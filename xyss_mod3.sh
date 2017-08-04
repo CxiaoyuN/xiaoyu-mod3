@@ -656,11 +656,9 @@ install_Whmcs(){
 	echo -e "\033[0;1;35m获取whmcs\033[0m"
 	cd /home/wwwroot/$Whmcsym/
 	mkdir /home/wwwroot/$Whmcsym/whmcs
-	mkdir /home/wwwroot/$Whmcsym/whmcs/vendor
 	cd /home/wwwroot/$Whmcsym/whmcs
 	wget https://github.com/CxiaoyuN/xiaoyu-ws/raw/master/whmcs.zip && unzip -q whmcs.zip
 	rm -rf whmcs.zip
-	cd /home/wwwroot/$Whmcsym/whmcs/vendor
 	wget https://github.com/CxiaoyuN/xiaoyu-ws/raw/master/vendor.zip && unzip -q vendor.zip
 	rm -rf vendor.zip
 	cd /home/wwwroot/$Whmcsym/whmcs
