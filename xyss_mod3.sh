@@ -682,9 +682,8 @@ install_Whmcs(){
 	service nginx restart
 	echo -e "\033[0;1;35mnginx重启成功\033[0m"
 	echo "#####################################################################################"
-	echo "# Wecenter设置成功，登录https://$wecenterym/install/进行安装.用邮箱创建账号！       #"
-	echo "# 更多网站数据：/home/wwwroot/$yuming/config/.config.php最后的设置                  #"
-	echo "# .config.php文件中wecenter 目录下的 system/config.inc.php这下面两行                #"
+	echo "# Whmcs设置成功，登录https://$Whmcsym/                                              #"
+	echo "# 管理界面：登录https://$Whmcsym/admin/                                             #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
 	echo "# Author: 小羽                                                                      #"
 	echo "# QQ群: 600573662                                                                   #"
@@ -697,10 +696,11 @@ install_Whmcs(){
 	exit
 	echo -e "\033[0;1;35m仔细看下面安装\033[0m"
 	echo "#####################################################################################"
-	echo "# Wecenter设置成功，登录https://$wecenterym/install/进行安装.用邮箱创建账号！       #"
-	echo "# 创建完账号后执行rm -rf /home/wwwroot/$wecenterym/Wecenter/install/index.php       #"
-	echo "# 更多网站数据：/home/wwwroot/$yuming/config/.config.php最后的设置                  #"
-	echo "# .config.php文件中wecenter 目录下的 system/config.inc.php这下面两行                #"
+	echo "# Whmcs设置成功，登录https://$Whmcsym/进行安装.用邮箱创建账号！                     #"
+	echo "# 管理界面：登录https://$Whmcsym/admin/                                             #"
+	echo "# 创建完账号后执行rm -rf /home/wwwroot/$Whmcsym/whmcs/install                       #"
+	echo "# 输入 chmod 444 /home/wwwroot/$Whmcsym/whmcs/configuration.php                     #"
+	echo "# 输入 php -q /home/wwwroot/$Whmcsym/whmcs/crons/cron.php                           #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
 	echo "# Author: 小羽                                                                      #"
 	echo "# QQ群: 600573662                                                                   #"
@@ -892,6 +892,6 @@ case "$num" in
 	install_SSL
 	;;
 	*)
-	echo "请输入正确数字 [1-6]"
+	echo "请输入正确数字 [1-9]"
 	;;
 esac
