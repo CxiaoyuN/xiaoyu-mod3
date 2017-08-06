@@ -183,6 +183,10 @@ install_ss_panel_mod_v3_old(){
 	yum install git -y
 	rm -rf index.html
 	wget https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/ss.panel_mod.zip && unzip -q ss.panel_mod.zip
+	wget -O /home/wwwroot/default/public/ssr-download/Shadowrocket-2.1.10.ipa https://github.com/CxiaoyuN/xiaoyu-mod3/raw/master/Shadowrocket-2.1.10.ipa
+	wget -O /home/wwwroot/default/public/ssr-download/ShadowsocksR-Android.zip https://github.com/CxiaoyuN/xiaoyu-mod3/raw/master/ShadowsocksR-Android.zip
+	wget -O /home/wwwroot/default/public/ssr-download/ShadowsocksR-win.zip https://github.com/CxiaoyuN/xiaoyu-mod3/raw/master/ShadowsocksR-win.zip
+	wget -O /home/wwwroot/default/public/ssr-download/ShadowsocksX-NG-R8.dmg https://github.com/CxiaoyuN/xiaoyu-mod3/raw/master/ShadowsocksX-NG-R8.dmg
 	chattr -i .user.ini
 	mv .user.ini public
 	chown -R root:root *
@@ -221,6 +225,10 @@ install_ss_panel_mod_v3_old(){
 	cd /home/wwwroot/default 
 	php composer.phar install
 	yum -y install vixie-cron crontabs
+	rm -rf /var/spool/cron/root
+	echo 'SHELL=/bin/bash' >> /var/spool/cron/root
+	echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
+	echo '*/20 * * * * /usr/sbin/ntpdate pool.ntp.org > /dev/null 2>&1' >> /var/spool/cron/root
 	echo '30 22 * * * php /www/wwwroot/default/xcat sendDiaryMail' >> /var/spool/cron/root
 	echo '*/1 * * * * php /www/wwwroot/default/xcat synclogin' >> /var/spool/cron/root
 	echo '*/1 * * * * php /www/wwwroot/default/xcat syncvpn' >> /var/spool/cron/root
@@ -229,7 +237,7 @@ install_ss_panel_mod_v3_old(){
 	echo '*/1 * * * * php -n /www/wwwroot/default/xcat syncnas' >> /var/spool/cron/root
 	/sbin/service crond restart
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
-	rm -rf /home/wwwroot/default/sspanel-mod3-web.zip
+	rm -rf /home/wwwroot/default/sspanel_mod3_old.zip
 	echo "#####################################################################################"
 	echo "# 安装成功，登录http://${IPAddress}，                                               #"
 	echo "# 创建管理：cd /home/wwwroot/default  然后 php xcat createAdmin                     #"
@@ -252,11 +260,7 @@ install_ss_panel_mod_v3_new(){
 	echo
 	echo -e "\033[0;1;35m数据设置\033[0m"
 	echo "-------------------------------------------"
-	echo "设置数据库密码lnmp是面板设置的" 
-    echo "输入lnmp设置的数据库密码:"
-    read -p "(默认: root):" lnmppasswd
-    [ -z "$lnmppasswd" ] && lnmppasswd="root"
-	echo "-------------------------------------------"
+	echo "设置数据库密码lnmp设置的请先默认root" 
 	echo "设置站点名称" 
     echo "输入站点名称:"
     read -p "(默认: 小羽SSR云控):" WZName
@@ -292,12 +296,14 @@ install_ss_panel_mod_v3_new(){
     read -p "(默认: xiaoyu007):" zippassword
     [ -z "$zippassword" ] && zippassword="xiaoyu007"
     echo "-------------------------------------------"
-	mkdir /home/wwwroot/backups
-	cd /home/wwwroot/default/
 	yum -y remove httpd
 	yum install -y unzip zip git
+	wget -c https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/lnmp1.3-mod.zip && unzip lnmp1.3-mod.zip && cd lnmp1.3-mod && chmod +x install.sh && ./install.sh lnmp
+	mkdir /home/wwwroot/backups
+	cd /home/wwwroot/default/
 	rm -rf index.html
-	git clone https://coding.net/u/xiao-yu/p/IP-MOD/git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
+	git clone https://github.com/CxiaoyuN/IP-MOD.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
+	cp config/.config.php.example config/.config.php
 	chattr -i .user.ini
 	mv .user.ini public
 	chown -R root:root *
@@ -306,20 +312,9 @@ install_ss_panel_mod_v3_new(){
 	chattr +i public/.user.ini
 	wget -N -P  /usr/local/nginx/conf/ https://github.com/CxiaoyuN/xiaoyu-mod3/raw/master/nginx.conf 
 	service nginx restart
-	yum install perl-DBI freeradius freeradius-mysql freeradius-utils -y
-	mysql -uroot -p$lnmppasswd -e"CREATE USER 'radius'@'%' IDENTIFIED BY 'root';" 
-	mysql -uroot -p$lnmppasswd -e"GRANT ALL ON *.* TO 'radius'@'%';" 
-	mysql -uroot -p$lnmppasswd -e"create database radius;" 
-	mysql -uroot -p$lnmppasswd -e"use radius;" 
-	mysql -uroot -p$lnmppasswd radius < /home/wwwroot/default/sql/radius.sql
-	mysql -uroot -p$lnmppasswd -e"CREATE USER 'ss-panel-radius'@'%' IDENTIFIED BY 'root';" 
-	mysql -uroot -p$lnmppasswd -e"GRANT ALL ON *.* TO 'ss-panel-radius'@'%';" 
-	mysql -uroot -p$lnmppasswd -e"CREATE USER 'sspanel'@'%' IDENTIFIED BY 'root';" 
-	mysql -uroot -p$lnmppasswd -e"GRANT ALL ON *.* TO 'sspanel'@'%';" 
-	mysql -uroot -p$lnmppasswd -e"create database sspanel;" 
-	mysql -uroot -p$lnmppasswd -e"use sspanel;" 
-	mysql -uroot -p$lnmppasswd sspanel < /home/wwwroot/default/sql/glzjin_all.sql
-	\cp /home/wwwroot/default/sql/sql.conf /etc/raddb/sql.conf
+	mysql -uroot -proot -e"create database sspanel;" 
+	mysql -uroot -proot -e"use sspanel;" 
+	mysql -uroot -proot sspanel < /home/wwwroot/default/sql/sspanel.sql
 	sed -i "s#WZName#$WZName#" /home/wwwroot/default/config/.config.php
 	sed -i "s#yuming#$yuming#" /home/wwwroot/default/config/.config.php
 	sed -i "s#QHKEY#$QHKEY#" /home/wwwroot/default/config/.config.php
@@ -327,15 +322,14 @@ install_ss_panel_mod_v3_new(){
 	sed -i "s#stmpmm#$stmpmm#" /home/wwwroot/default/config/.config.php
 	sed -i "s#beifenemail#$beifenemail#" /home/wwwroot/default/config/.config.php
 	sed -i "s#zippassword#$zippassword#" /home/wwwroot/default/config/.config.php
-	wget https://github.com/glzjin/Radius-install/raw/master/radiusd.conf -O /etc/raddb/radiusd.conf
-	wget https://github.com/glzjin/Radius-install/raw/master/default -O /etc/raddb/sites-enabled/default
-	wget https://github.com/glzjin/Radius-install/raw/master/dialup.conf -O /etc/raddb/sql/mysql/dialup.conf
-	wget https://github.com/glzjin/Radius-install/raw/master/dictionary -O /etc/raddb/dictionary
-	wget https://github.com/glzjin/Radius-install/raw/master/counter.conf -O /etc/raddb/sql/mysql/counter.conf
-	service radiusd start && chkconfig radiusd on
-	cd /home/wwwroot/default 
+	cd /home/wwwroot/default
 	php composer.phar install
+	php -n xcat initdownload
 	yum -y install vixie-cron crontabs
+	rm -rf /var/spool/cron/root
+	echo 'SHELL=/bin/bash' >> /var/spool/cron/root
+	echo 'PATH=/sbin:/bin:/usr/sbin:/usr/bin' >> /var/spool/cron/root
+	echo '*/20 * * * * /usr/sbin/ntpdate pool.ntp.org > /dev/null 2>&1' >> /var/spool/cron/root
 	echo '30 22 * * * php /www/wwwroot/default/xcat sendDiaryMail' >> /var/spool/cron/root
 	echo '*/1 * * * * php /www/wwwroot/default/xcat synclogin' >> /var/spool/cron/root
 	echo '*/1 * * * * php /www/wwwroot/default/xcat syncvpn' >> /var/spool/cron/root
@@ -344,10 +338,10 @@ install_ss_panel_mod_v3_new(){
 	echo '*/1 * * * * php -n /www/wwwroot/default/xcat syncnas' >> /var/spool/cron/root
 	/sbin/service crond restart
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
-	rm -rf /home/wwwroot/default/sspanel-mod3-web.zip
 	echo "#####################################################################################"
 	echo "# 安装成功，登录http://${IPAddress}，                                               #"
-	echo "# 创建管理：cd /home/wwwroot/default  然后 php xcat createAdmin                     #"
+	echo "# 管理：账号xiaoyu@qq.com密码xiaoyu66  注意：后台更改管理员账号密码                 #"
+	echo "# 更改数据库mysqladmin -u root -p'root' password '新密码'                           #"
 	echo "# 更多网站数据：/home/wwwroot/default/config/.config.php                            #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
 	echo "# 节点设置: 例如   香港 1 – Shadowsocks                                             #"
@@ -767,10 +761,10 @@ install_ubuntu_ssr(){
 	cp apiconfig.py userapiconfig.py
 	cp config.json user-config.json
 	#iptables
-	iptables -I INPUT -p tcp -m tcp --dport 104 -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 104 -j ACCEPT
-	iptables -I INPUT -p tcp -m tcp --dport 1024: -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 1024: -j ACCEPT
+	iptables -I INPUT -p tcp -m tcp --dport 68 -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 68 -j ACCEPT
+	iptables -I INPUT -p tcp -m tcp --dport 80: -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 80: -j ACCEPT
 	iptables-save >/etc/sysconfig/iptables
 }
 install_node(){
@@ -850,48 +844,52 @@ echo -e "\033[36m#                        支持 Centos与Ubuntu系统          
 echo -e "\033[36m# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master   #\033[0m"
 echo -e "\033[36m# Author: 小羽                                                             #\033[0m"
 echo -e "\033[36m# QQ群: 600573662                                                          #\033[0m"
-echo -e "\033[36m# 请选择你要安装的脚本                                                     #\033[0m"
-echo -e "\033[36m# 1  安装SS-Panel-Mod3环境lnmp1.3                                          #\033[0m"
-echo -e "\033[36m# 2  安装SS-Panel-Mod3前端面板（IP版）                                     #\033[0m"
-echo -e "\033[36m# 3  安装SS-Panel-Mod3前端面板（域名版）                                   #\033[0m"
-echo -e "\033[36m# 4  安装SS-Panel-Mod3 问答系统                                            #\033[0m"
-echo -e "\033[36m# 5  安装小羽版Whmcs网站                                                   #\033[0m"
-echo -e "\033[36m# 6  安装SS-Panel-Mod3后端节点                                             #\033[0m"
-echo -e "\033[36m# 7  安装TCP_BBR原版加速器                                                 #\033[0m"
-echo -e "\033[36m# 8  安装TCP_BBR魔改版加速器（Debian8、9和Ubuntu16）                       #\033[0m"
-echo -e "\033[36m# 9  安装SSL证书 （建议腾讯的）                                            #\033[0m"
+echo -e "\033[36m#  请选择你要安装的脚本                                                    #\033[0m"
+echo -e "\033[36m#  1  安装SS-Panel-Mod3环境lnmp1.3                                         #\033[0m"
+echo -e "\033[36m#  2  安装SS-Panel-Mod3前端面板（IP旧版）推荐                              #\033[0m"
+echo -e "\033[36m#  3  安装SS-Panel-Mod3前端面板（IP新版）不用安装1                         #\033[0m"
+echo -e "\033[36m#  4  安装SS-Panel-Mod3前端面板（域名版）推荐                              #\033[0m"
+echo -e "\033[36m#  5  安装SS-Panel-Mod3 问答系统                                           #\033[0m"
+echo -e "\033[36m#  6  安装小羽版Whmcs网站                                                  #\033[0m"
+echo -e "\033[36m#  7  安装SS-Panel-Mod3后端节点                                            #\033[0m"
+echo -e "\033[36m#  8  安装TCP_BBR原版加速器                                                #\033[0m"
+echo -e "\033[36m#  9  安装TCP_BBR魔改版加速器（Debian8、9和Ubuntu16）                      #\033[0m"
+echo -e "\033[36m# 10  安装SSL证书 （建议腾讯的）                                           #\033[0m"
 echo -e "\033[36m############################################################################\033[0m"
 echo
-stty erase '^H' && read -p " 请输入数字 [1-6]:" num
+stty erase '^H' && read -p " 请输入数字 [1-10]:" num
 case "$num" in
 	1)
 	install_lnmp1.3_mod
 	;;
 	2)
-	install_ss_panel_mod_v3_new
+	install_ss_panel_mod_v3_old
 	;;
 	3)
-	install_ss_panel_mod_v3_2
+	install_ss_panel_mod_v3_new
 	;;
 	4)
-	install_WeCenter
+	install_ss_panel_mod_v3_2
 	;;
 	5)
-	install_Whmcs
+	install_WeCenter
 	;;
 	6)
-	install_node
+	install_Whmcs
 	;;
 	7)
-	install_TCP_BBR
+	install_node
 	;;
 	8)
-	install_TCP_BBR_MOD
+	install_TCP_BBR
 	;;
 	9)
+	install_TCP_BBR_MOD
+	;;
+	10)
 	install_SSL
 	;;
 	*)
-	echo "请输入正确数字 [1-9]"
+	echo "请输入正确数字 [1-10]"
 	;;
 esac
