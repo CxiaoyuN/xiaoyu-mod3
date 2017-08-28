@@ -71,7 +71,7 @@ install_ss_py_mu(){
 	echo
 	#Check Root
 	[ $(id -u) != "0" ] && { echo "Error: You must be root to run this script"; exit 1; }
-	read -p "Please input your domain(like:https://ss.91vps.club or http://114.114.114.114): " Userdomain
+	read -p "Please input your domain(like:https://ss.91vps.us or http://114.114.114.114): " Userdomain
 	read -p "Please input your mukey(like:mupass): " Usermukey
 	read -p "Please input your Node_ID(like:1): " UserNODE_ID
 	#check OS version
@@ -99,9 +99,9 @@ install_ss_py_mu(){
 			echo "Will install below software on your centos system:"
 			yum install git lsof -y
 			yum install python-setuptools -y 
-			yum -y groupinstall "Development Tools" -y
-			wget https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/libsodium-1.0.11.tar.gz
-			tar xf libsodium-1.0.11.tar.gz && cd libsodium-1.0.11
+			yum -y groupinstall "Development Tools"
+			wget https://github.com/jedisct1/libsodium/releases/download/1.0.13/libsodium-1.0.13.tar.gz
+			tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 			./configure && make -j2 && make install
 			echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 			ldconfig
@@ -112,9 +112,10 @@ install_ss_py_mu(){
 		apt-get install supervisor -y
 		apt-get install git -y
 		apt-get install build-essential -y
-		wget https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/libsodium-1.0.11.tar.gz
-		tar xf libsodium-1.0.11.tar.gz && cd libsodium-1.0.11
+		wget https://github.com/jedisct1/libsodium/releases/download/1.0.13/libsodium-1.0.13.tar.gz
+		tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 		./configure && make -j2 && make install
+		echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 		ldconfig
 		fi
 	}
@@ -187,8 +188,8 @@ one_click_all(){
 			yum install git lsof -y
 			yum install python-setuptools -y 
 			yum -y groupinstall "Development Tools" -y
-			wget https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/libsodium-1.0.11.tar.gz
-			tar xf libsodium-1.0.11.tar.gz && cd libsodium-1.0.11
+			wget https://github.com/jedisct1/libsodium/releases/download/1.0.13/libsodium-1.0.13.tar.gz
+			tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 			./configure && make -j2 && make install
 			echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 			ldconfig
@@ -199,9 +200,10 @@ one_click_all(){
 		apt-get install supervisor -y
 		apt-get install git -y
 		apt-get install build-essential -y
-		wget https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/libsodium-1.0.11.tar.gz
-		tar xf libsodium-1.0.11.tar.gz && cd libsodium-1.0.11
+		wget https://github.com/jedisct1/libsodium/releases/download/1.0.13/libsodium-1.0.13.tar.gz
+		tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 		./configure && make -j2 && make install
+		echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 		ldconfig
 		fi
 	}
