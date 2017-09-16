@@ -298,11 +298,11 @@ install_ss_panel_mod_v3_new(){
     echo "-------------------------------------------"
 	yum -y remove httpd
 	yum install -y unzip zip git
-	wget -c https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/lnmp1.3-mod.zip && unzip lnmp1.3-mod.zip && cd lnmp1.3-mod && chmod +x install.sh && ./install.sh lnmp
+	wget -c https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/lnmp1.3-mod.zip && unzip lnmp1.3.zip && cd lnmp1.3 && chmod +x install.sh && ./install.sh lnmp
 	mkdir /home/wwwroot/backups
 	cd /home/wwwroot/default/
 	rm -rf index.html
-	git clone https://github.com/CxiaoyuN/IP-MOD.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
+	git clone https://github.com/CxiaoyuN/IPmod.git tmp && mv tmp/.git . && rm -rf tmp && git reset --hard
 	cp config/.config.php.example config/.config.php
 	chattr -i .user.ini
 	mv .user.ini public
@@ -310,8 +310,10 @@ install_ss_panel_mod_v3_new(){
 	chmod -R 777 *
 	chown -R www:www storage
 	chattr +i public/.user.ini
-	wget -N -P  /usr/local/nginx/conf/ https://github.com/CxiaoyuN/xiaoyu-mod3/raw/master/nginx.conf 
+	wget -N -P  /usr/local/nginx/conf/ https://raw.githubusercontent.com/CxiaoyuN/IPmod/master/nginx.conf  
 	service nginx restart
+	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
+	sed -i "s#103.74.192.11#${IPAddress}#" /home/wwwroot/default/sql/sspanel.sql
 	mysql -uroot -proot -e"create database sspanel;" 
 	mysql -uroot -proot -e"use sspanel;" 
 	mysql -uroot -proot sspanel < /home/wwwroot/default/sql/sspanel.sql
@@ -337,10 +339,9 @@ install_ss_panel_mod_v3_new(){
 	echo '*/1 * * * * php /www/wwwroot/default/xcat checkjob' >> /var/spool/cron/root
 	echo '*/1 * * * * php -n /www/wwwroot/default/xcat syncnas' >> /var/spool/cron/root
 	/sbin/service crond restart
-	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 	echo "#####################################################################################"
 	echo "# 安装成功，登录http://${IPAddress}，                                               #"
-	echo "# 管理：账号xiaoyu@qq.com密码xiaoyu66  注意：后台更改管理员账号密码                 #"
+	echo "# 管理：账号ss@feiyang.li密码feiyang  注意：后台更改管理员账号密码                  #"
 	echo "# 更改数据库mysqladmin -u root -p'root' password '新密码'                           #"
 	echo "# 更多网站数据：/home/wwwroot/default/config/.config.php                            #"
 	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
@@ -602,7 +603,7 @@ install_Whmcs(){
     clear
 	echo
 	echo "#############################################################################"
-	echo "#                        安装小羽版Whmcs网站                                #"
+	echo "#                        安装小羽版Whmcs(英文版）网站                       #"
 	echo "#                 安装它必须先安装SSL证书，并且比较看好手动能力             #"
 	echo "# Author: 小羽                                                              #"
 	echo "# QQ群: 600573662                                                           #"
@@ -651,11 +652,8 @@ install_Whmcs(){
 	cd /home/wwwroot/$Whmcsym/
 	mkdir /home/wwwroot/$Whmcsym/whmcs
 	cd /home/wwwroot/$Whmcsym/whmcs
-	wget https://github.com/CxiaoyuN/xiaoyu-ws/raw/master/whmcs.zip && unzip -q whmcs.zip
+	wget -O whmcs.zip https://www.xiaoyussr.top/index.php?share/fileDownload&user=1&sid=Xax5yR3D && unzip -q whmcs.zip
 	rm -rf whmcs.zip
-	wget https://github.com/CxiaoyuN/xiaoyu-ws/raw/master/vendor.zip && unzip -q vendor.zip
-	rm -rf vendor.zip
-	cd /home/wwwroot/$Whmcsym/whmcs
 	cp /home/wwwroot/$Whmcsym/whmcs/configuration.php.new /home/wwwroot/$Whmcsym/whmcs/configuration.php
 	rm -rf /home/wwwroot/$Whmcsym/whmcs/configuration.php.new
 	chmod 777 /home/wwwroot/$Whmcsym/whmcs/configuration.php
@@ -678,7 +676,7 @@ install_Whmcs(){
 	echo "#####################################################################################"
 	echo "# Whmcs设置成功，登录https://$Whmcsym/                                              #"
 	echo "# 管理界面：登录https://$Whmcsym/admin/                                             #"
-	echo "# Github: https://github.com/esdeathlove/ss-panel-v3-mod/tree/new_master            #"
+	echo "# 汉化自己找文件替换                                                                #"
 	echo "# Author: 小羽                                                                      #"
 	echo "# QQ群: 600573662                                                                   #"
 	echo "#####################################################################################"
@@ -703,11 +701,10 @@ install_Whmcs(){
 
 }
 install_centos_ssr(){
-	yum -y remove httpd
 	yum -y update
-	yum -y install git -y
-	yum -y install python-setuptools && easy_install pip -y
-	yum -y groupinstall "Development Tools" -y
+	yum -y install git 
+	yum -y install python-setuptools && easy_install pip 
+	yum -y groupinstall "Development Tools" 
 	#512M的小鸡增加1G的Swap分区
 	dd if=/dev/zero of=/var/swap bs=1024 count=1048576
 	mkswap /var/swap
@@ -719,26 +716,23 @@ install_centos_ssr(){
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
+	yum -y install python-setuptools
+	easy_install supervisor
 	#clone shadowsocks
 	cd /root
 	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
 	#install devel
 	cd /root/shadowsocks
+	yum -y install lsof lrzsz
 	yum -y install python-devel
 	yum -y install libffi-devel
 	yum -y install openssl-devel
+	yum -y install iptables
+	systemctl stop firewalld.service
+	systemctl disable firewalld.service
 	pip install -r requirements.txt
 	cp apiconfig.py userapiconfig.py
 	cp config.json user-config.json
-	#iptables
-	iptables -I INPUT -p tcp -m tcp --dport 104 -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 104 -j ACCEPT
-	iptables -I INPUT -p tcp -m tcp --dport 1024: -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 1024: -j ACCEPT
-	iptables-save >/etc/sysconfig/iptables
-	echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
-	echo '/root/shadowsocks/./logrun.sh ' >> /etc/rc.local
-	chmod +x /etc/rc.d/rc.local
 }
 install_ubuntu_ssr(){
 	apt-get update -y
@@ -760,12 +754,6 @@ install_ubuntu_ssr(){
 	# 配置程序
 	cp apiconfig.py userapiconfig.py
 	cp config.json user-config.json
-	#iptables
-	iptables -I INPUT -p tcp -m tcp --dport 68 -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 68 -j ACCEPT
-	iptables -I INPUT -p tcp -m tcp --dport 80: -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 80: -j ACCEPT
-	iptables-save >/etc/sysconfig/iptables
 }
 install_node(){
 	clear
@@ -808,9 +796,9 @@ install_node(){
 	}
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	read -p "Please input your domain(like:https://www.xiaoyu.com or http://114.114.114.114): " Userdomain
+	read -p "Please input your domain(like:https://ss.feiyang.li or http://114.114.114.114): " Userdomain
 	read -p "Please input your muKey(like:mupass): " Usermukey
-	read -p "Please input your Node_ID(like:3): " UserNODE_ID
+	read -p "Please input your Node_ID(like:1): " UserNODE_ID
 	install_ssr_for_each
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 	cd /root/shadowsocks
@@ -824,8 +812,16 @@ install_node(){
 	sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks/userapiconfig.py
 	# 启用supervisord
 	echo_supervisord_conf > /etc/supervisord.conf
-    sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+  sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
 	supervisord
+	#iptables
+	iptables -F
+	iptables -X  
+	iptables -I INPUT -p tcp -m tcp --dport 104 -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 104 -j ACCEPT
+	iptables -I INPUT -p tcp -m tcp --dport 1024: -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 1024: -j ACCEPT
+	iptables-save >/etc/sysconfig/iptables
 	echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
 	echo "/usr/bin/supervisord -c /etc/supervisord.conf" >> /etc/rc.local
 	chmod +x /etc/rc.d/rc.local
@@ -835,6 +831,39 @@ install_node(){
 	echo "# Author: 小羽                                                        #"
 	echo "# QQ群: 600573662                                                     #"
 	echo "#######################################################################"
+	reboot now
+}
+install_panel_and_node_v3_new(){
+	install_ss_panel_mod_v3_new
+	# 取消文件数量限制
+	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
+	install_centos_ssr
+	wget -N -P  /root/shadowsocks/ https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/userapiconfig.py
+	sed -i "s#QHKEY#$QHKEY#" /root/shadowsocks/.config.php/userapiconfig.py
+	# 启用supervisord
+	echo_supervisord_conf > /etc/supervisord.conf
+  sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+	supervisord
+	#iptables
+	systemctl stop firewalld.service
+	systemctl disable firewalld.service
+	yum install iptables -y
+	iptables -F
+	iptables -X  
+	iptables -I INPUT -p tcp -m tcp --dport 104 -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 104 -j ACCEPT
+	iptables -I INPUT -p tcp -m tcp --dport 1024: -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 1024: -j ACCEPT
+	iptables-save >/etc/sysconfig/iptables
+	echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
+	echo "/usr/bin/supervisord -c /etc/supervisord.conf" >> /etc/rc.local
+	chmod +x /etc/rc.d/rc.local
+	echo "#############################################################"
+	echo "# 安装完成，登录http://${IPAddress}看看吧~                  #"
+	echo "# 安装完成，节点即将重启使配置生效                          #"
+	echo "# Github: https://github.com/mmmwhy/ss-panel-and-ss-py-mu   #"
+	echo "# Blog: https://91vps.us/2017/05/27/ss-panel-v3-mod/        #"
+	echo "#############################################################"
 	reboot now
 }
 echo
@@ -847,7 +876,7 @@ echo -e "\033[36m# QQ群: 600573662                                             
 echo -e "\033[36m#  请选择你要安装的脚本                                                    #\033[0m"
 echo -e "\033[36m#  1  安装SS-Panel-Mod3环境lnmp1.3                                         #\033[0m"
 echo -e "\033[36m#  2  安装SS-Panel-Mod3前端面板（IP旧版）推荐                              #\033[0m"
-echo -e "\033[36m#  3  安装SS-Panel-Mod3前端面板（IP新版）不用安装1                         #\033[0m"
+echo -e "\033[36m#  3  安装SS-Panel-Mod3前端面板（IP新版,自带安装前后端）不用安装1          #\033[0m"
 echo -e "\033[36m#  4  安装SS-Panel-Mod3前端面板（域名版）推荐                              #\033[0m"
 echo -e "\033[36m#  5  安装SS-Panel-Mod3 问答系统                                           #\033[0m"
 echo -e "\033[36m#  6  安装小羽版Whmcs网站                                                  #\033[0m"
@@ -866,7 +895,7 @@ case "$num" in
 	install_ss_panel_mod_v3_old
 	;;
 	3)
-	install_ss_panel_mod_v3_new
+	install_panel_and_node_v3_new
 	;;
 	4)
 	install_ss_panel_mod_v3_2
