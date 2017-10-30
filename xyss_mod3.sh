@@ -796,7 +796,7 @@ install_node(){
 	}
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	read -p "Please input your domain(like:https://ss.feiyang.li or http://114.114.114.114): " Userdomain
+	read -p "Please input your domain(like:https://ml.xiaoyu.top or http://114.114.114.114): " Userdomain
 	read -p "Please input your muKey(like:mupass): " Usermukey
 	read -p "Please input your Node_ID(like:1): " UserNODE_ID
 	install_ssr_for_each
@@ -812,15 +812,14 @@ install_node(){
 	sed -i "2a\NODE_ID = ${UserNODE_ID}" /root/shadowsocks/userapiconfig.py
 	# 启用supervisord
 	echo_supervisord_conf > /etc/supervisord.conf
-  sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+    	sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
 	supervisord
 	#iptables
 	iptables -F
 	iptables -X  
-	iptables -I INPUT -p tcp -m tcp --dport 104 -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 104 -j ACCEPT
-	iptables -I INPUT -p tcp -m tcp --dport 1024: -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 1024: -j ACCEPT
+	iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
+	iptables-save >/etc/sysconfig/iptables
 	iptables-save >/etc/sysconfig/iptables
 	echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
 	echo "/usr/bin/supervisord -c /etc/supervisord.conf" >> /etc/rc.local
@@ -834,15 +833,14 @@ install_node(){
 	reboot now
 }
 install_panel_and_node_v3_new(){
-	install_ss_panel_mod_v3_new
+	install_ss_panel_mod_v3
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
 	install_centos_ssr
-	wget -N -P  /root/shadowsocks/ https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/userapiconfig.py
-	sed -i "s#QHKEY#$QHKEY#" /root/shadowsocks/.config.php/userapiconfig.py
+	wget -N -P  /root/shadowsocks/ https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/userapiconfig.py
 	# 启用supervisord
 	echo_supervisord_conf > /etc/supervisord.conf
-  sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
+  	sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
 	supervisord
 	#iptables
 	systemctl stop firewalld.service
@@ -850,20 +848,19 @@ install_panel_and_node_v3_new(){
 	yum install iptables -y
 	iptables -F
 	iptables -X  
-	iptables -I INPUT -p tcp -m tcp --dport 104 -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 104 -j ACCEPT
-	iptables -I INPUT -p tcp -m tcp --dport 1024: -j ACCEPT
-	iptables -I INPUT -p udp -m udp --dport 1024: -j ACCEPT
+	iptables -I INPUT -p tcp -m tcp --dport 22:65535 -j ACCEPT
+	iptables -I INPUT -p udp -m udp --dport 22:65535 -j ACCEPT
+	iptables-save >/etc/sysconfig/iptables
 	iptables-save >/etc/sysconfig/iptables
 	echo 'iptables-restore /etc/sysconfig/iptables' >> /etc/rc.local
 	echo "/usr/bin/supervisord -c /etc/supervisord.conf" >> /etc/rc.local
 	chmod +x /etc/rc.d/rc.local
-	echo "#############################################################"
-	echo "# 安装完成，登录http://${IPAddress}看看吧~                  #"
-	echo "# 安装完成，节点即将重启使配置生效                          #"
-	echo "# Github: https://github.com/mmmwhy/ss-panel-and-ss-py-mu   #"
-	echo "# Blog: https://91vps.us/2017/05/27/ss-panel-v3-mod/        #"
-	echo "#############################################################"
+	echo "#######################################################################"
+	echo "# 安装完成，登录http://${IPAddress}看看吧~                            #"
+	echo "# 安装完成，节点即将重启使配置生效                                    #"
+	echo "# Github: https://github.com/esdeathlove/shadowsocks/tree/manyuser    #"
+	echo "# QQ群: 600573662                                                     #"
+	echo "#######################################################################"
 	reboot now
 }
 echo
@@ -875,7 +872,7 @@ echo -e "\033[36m# Author: 小羽                                               
 echo -e "\033[36m# QQ群: 600573662                                                          #\033[0m"
 echo -e "\033[36m#  请选择你要安装的脚本                                                    #\033[0m"
 echo -e "\033[36m#  1  安装SS-Panel-Mod3环境lnmp1.3                                         #\033[0m"
-echo -e "\033[36m#  2  安装SS-Panel-Mod3前端面板（IP旧版）推荐                              #\033[0m"
+echo -e "\033[36m#  2  安装SS-Panel-Mod3前端面板（IP旧版,先安装1）推荐                      #\033[0m"
 echo -e "\033[36m#  3  安装SS-Panel-Mod3前端面板（IP新版,自带安装前后端）不用安装1          #\033[0m"
 echo -e "\033[36m#  4  安装SS-Panel-Mod3前端面板（域名版）推荐                              #\033[0m"
 echo -e "\033[36m#  5  安装SS-Panel-Mod3 问答系统                                           #\033[0m"
