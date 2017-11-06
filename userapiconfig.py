@@ -15,7 +15,7 @@ SERVER_PUB_ADDR = '127.0.0.1'  # mujson_mgr need this to generate ssr link
 API_INTERFACE = 'glzjinmod'  # mupassmod, modwebapi
 
 WEBAPI_URL = 'http://192.241.194.172'
-WEBAPI_TOKEN = 'QHKEY'
+WEBAPI_TOKEN = 'mupass'
 
 # mudb
 MUDB_FILE = 'mudb.json'
