@@ -702,22 +702,18 @@ install_Whmcs(){
 }
 install_centos_ssr(){
 	yum -y update
-	yum -y install git 
-	yum -y install python-setuptools && easy_install pip 
+	yum -y install git gcc
+	yum -y install python-setuptools 
+	curl https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/get-pip.py -o get-pip.py
+	python get-pip.py
+	rm -rf python get-pip.py
 	yum -y groupinstall "Development Tools" 
-	#512M的小鸡增加1G的Swap分区
-	dd if=/dev/zero of=/var/swap bs=1024 count=1048576
-	mkswap /var/swap
-	chmod 0644 /var/swap
-	swapon /var/swap
-	echo '/var/swap   swap   swap   default 0 0' >> /etc/fstab
-	wget https://github.com/jedisct1/libsodium/releases/download/1.0.13/libsodium-1.0.13.tar.gz
+	wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz
 	tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
 	ldconfig
-	yum -y install python-setuptools
-	easy_install supervisor
+	pip install supervisor
 	#clone shadowsocks
 	cd /root
 	git clone -b manyuser https://github.com/glzjin/shadowsocks.git "/root/shadowsocks"
@@ -739,7 +735,7 @@ install_ubuntu_ssr(){
 	apt-get install supervisor lsof -y
 	apt-get install build-essential wget -y
 	apt-get install iptables git -y
-	wget https://github.com/jedisct1/libsodium/releases/download/1.0.13/libsodium-1.0.13.tar.gz
+	wget https://download.libsodium.org/libsodium/releases/libsodium-1.0.13.tar.gz
 	tar xf libsodium-1.0.13.tar.gz && cd libsodium-1.0.13
 	./configure && make -j2 && make install
 	echo /usr/local/lib > /etc/ld.so.conf.d/usr_local_lib.conf
@@ -796,9 +792,9 @@ install_node(){
 	}
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
-	read -p "Please input your domain(like:https://ml.xiaoyu.top or http://114.114.114.114): " Userdomain
+	read -p "Please input your domain(like:https://ml.xiaoyu.win or http://114.114.114.114): " Userdomain
 	read -p "Please input your muKey(like:mupass): " Usermukey
-	read -p "Please input your Node_ID(like:1): " UserNODE_ID
+	read -p "Please input your Node_ID(like:3): " UserNODE_ID
 	install_ssr_for_each
 	IPAddress=`wget http://members.3322.org/dyndns/getip -O - -q ; echo`;
 	cd /root/shadowsocks
@@ -825,7 +821,7 @@ install_node(){
 	echo "/usr/bin/supervisord -c /etc/supervisord.conf" >> /etc/rc.local
 	chmod +x /etc/rc.d/rc.local
 	echo "#######################################################################"
-	echo "# 安装成功，登录https://${IPAddress}查看节点                          #"
+	echo "# 安装成功，登录https://${Userdomain}查看节点                #"
 	echo "# Github: https://github.com/esdeathlove/shadowsocks/tree/manyuser    #"
 	echo "# Author: 小羽                                                        #"
 	echo "# QQ群: 600573662                                                     #"
@@ -837,7 +833,7 @@ install_panel_and_node_v3_new(){
 	# 取消文件数量限制
 	sed -i '$a * hard nofile 512000\n* soft nofile 512000' /etc/security/limits.conf
 	install_centos_ssr
-	wget -N -P  /root/shadowsocks/ https://raw.githubusercontent.com/mmmwhy/ss-panel-and-ss-py-mu/master/userapiconfig.py
+	wget -N -P  /root/shadowsocks/ https://raw.githubusercontent.com/CxiaoyuN/xiaoyu-mod3/master/userapiconfig.py
 	# 启用supervisord
 	echo_supervisord_conf > /etc/supervisord.conf
   	sed -i '$a [program:ssr]\ncommand = python /root/shadowsocks/server.py\nuser = root\nautostart = true\nautorestart = true' /etc/supervisord.conf
